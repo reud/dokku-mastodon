@@ -87,6 +87,7 @@ server {
 
   include {{ $.DOKKU_ROOT }}/{{ $.APP }}/nginx.conf.d/*.conf;
 }
+{{ end }}
 
 {{ if $.DOKKU_APP_WEB_LISTENERS }}
 {{ range $upstream_port := $.PROXY_UPSTREAM_PORTS | split " " }}
