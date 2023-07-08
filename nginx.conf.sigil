@@ -1,15 +1,14 @@
 {{ range $port_map := .PROXY_PORT_MAP | split " " }}
 {{ $port_map_list := $port_map | split ":" }}
+{{ $scheme := index $port_map_list 0 }}
+{{ $listen_port := index $port_map_list 1 }}
 {{ $upstream_port := index $port_map_list 2 }}
 
 server {
   listen      80;
-
   access_log  /var/log/nginx/heart-access.log;
   error_log   /var/log/nginx/heart-error.log;
-
   keepalive_timeout   70;
-  
   location / {
     try_files $uri @masto_proxy;
   }
@@ -77,4 +76,4 @@ upstream {{ $.APP }}-{{ $upstream_port }} {
   server {{ $listener_ip }}:{{ $upstream_port }};{{ end }}
 }
 
-{{end}}{{end}}
+{{ end }}{{ end }}{{ end }}{{ end }}
