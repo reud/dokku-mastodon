@@ -85,4 +85,5 @@ upstream {{ $.APP }}-{{ $upstream_port }} {
 
 }
 
-{{ end }}{{ end }}
+{{end}}
+{{end}}
