@@ -1,6 +1,7 @@
 {{ range $port_map := .PROXY_PORT_MAP | split " " }}
 {{ $port_map_list := $port_map | split ":" }}
 {{ $upstream_port := index $port_map_list 2 }}
+
 server {
   listen      80;
 
@@ -75,4 +76,5 @@ upstream {{ $.APP }}-{{ $upstream_port }} {
 {{ $listener_ip := index $listener_list 0 }}
   server {{ $listener_ip }}:{{ $upstream_port }};{{ end }}
 }
+
 {{ end }}{{ end }}
