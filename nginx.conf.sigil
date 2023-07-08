@@ -1,3 +1,4 @@
+{{ range $port_map := .PROXY_PORT_MAP | split " " }}
 {{ $upstream_port := index $port_map_list 2 }}
 server {
   listen      80;
