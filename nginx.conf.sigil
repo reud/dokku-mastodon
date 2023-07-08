@@ -4,24 +4,10 @@
 {{ $listen_port := index $port_map_list 1 }}
 {{ $upstream_port := index $port_map_list 2 }}
 
-{{ if eq $scheme "http" }}
 server {
-  listen      [{{ $.NGINX_BIND_ADDRESS_IP6 }}]:{{ $listen_port }};
-  listen      {{ if $.NGINX_BIND_ADDRESS_IP4 }}{{ $.NGINX_BIND_ADDRESS_IP4 }}:{{end}}{{ $listen_port }};
-  {{ if $.NOSSL_SERVER_NAME }}server_name {{ $.NOSSL_SERVER_NAME }}; {{ end }}
-  access_log  {{ $.NGINX_ACCESS_LOG_PATH }}{{ if and ($.NGINX_ACCESS_LOG_FORMAT) (ne $.NGINX_ACCESS_LOG_PATH "off") }} {{ $.NGINX_ACCESS_LOG_FORMAT }}{{ end }};
-  error_log   {{ $.NGINX_ERROR_LOG_PATH }};
+  listen      80;
 
-  location / {
-    return 301 https://$host:{{ $.PROXY_SSL_PORT }}$request_uri;
-  }
-}
-{{ else if eq $scheme "https"}}
-server {
-  listen      [{{ $.NGINX_BIND_ADDRESS_IP6 }}]:{{ $listen_port }} ssl {{ if eq $.HTTP2_SUPPORTED "true" }}http2{{ end }};
-  listen      {{ if $.NGINX_BIND_ADDRESS_IP4 }}{{ $.NGINX_BIND_ADDRESS_IP4 }}:{{end}}{{ $listen_port }} ssl {{ if eq $.HTTP2_SUPPORTED "true" }}http2{{ end }};
-  {{ if $.SSL_SERVER_NAME }}server_name {{ $.SSL_SERVER_NAME }}; {{ end }}
-  {{ if $.NOSSL_SERVER_NAME }}server_name {{ $.NOSSL_SERVER_NAME }}; {{ end }}
+
   access_log  {{ $.NGINX_ACCESS_LOG_PATH }}{{ if and ($.NGINX_ACCESS_LOG_FORMAT) (ne $.NGINX_ACCESS_LOG_PATH "off") }} {{ $.NGINX_ACCESS_LOG_FORMAT }}{{ end }};
   error_log   {{ $.NGINX_ERROR_LOG_PATH }};
 
@@ -91,7 +77,7 @@ server {
     proxy_set_header Host $http_host;
     proxy_set_header X-Forwarded-For {{ $.PROXY_X_FORWARDED_FOR }};
     proxy_set_header X-Forwarded-Port {{ $.PROXY_X_FORWARDED_PORT }};
-    proxy_set_header X-Forwarded-Proto {{ $.PROXY_X_FORWARDED_PROTO }};
+    proxy_set_header X-Forwarded-Proto https;
     proxy_set_header X-Request-Start $msec;
     {{ if $.PROXY_X_FORWARDED_SSL }}proxy_set_header X-Forwarded-Ssl {{ $.PROXY_X_FORWARDED_SSL }};{{ end }}
 
@@ -102,13 +88,3 @@ server {
 }
 {{ end }}
 {{ end }}
-
-{{ if $.DOKKU_APP_WEB_LISTENERS }}
-{{ range $upstream_port := $.PROXY_UPSTREAM_PORTS | split " " }}
-upstream {{ $.APP }}-{{ $upstream_port }} {
-{{ range $listeners := $.DOKKU_APP_WEB_LISTENERS | split " " }}
-{{ $listener_list := $listeners | split ":" }}
-{{ $listener_ip := index $listener_list 0 }}
-  server {{ $listener_ip }}:{{ $upstream_port }};{{ end }}
-}
-{{ end }}{{ end }}
