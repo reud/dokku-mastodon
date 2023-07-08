@@ -1,4 +1,3 @@
-aaaaaaaaaaaaaaaaaaa
 {{ range $port_map := .PROXY_PORT_MAP | split " " }}
 {{ $port_map_list := $port_map | split ":" }}
 {{ $upstream_port := index $port_map_list 2 }}
@@ -68,12 +67,3 @@ server {
 
   include /home/dokku/heart/nginx.conf.d/*.conf;
 }
-{{ if $.DOKKU_APP_WEB_LISTENERS }}
-{{ range $upstream_port := $.PROXY_UPSTREAM_PORTS | split " " }}
-upstream {{ $.APP }}-{{ $upstream_port }} {
-{{ range $listeners := $.DOKKU_APP_WEB_LISTENERS | split " " }}
-{{ $listener_list := $listeners | split ":" }}
-{{ $listener_ip := index $listener_list 0 }}
-  server {{ $listener_ip }}:{{ $upstream_port }};{{ end }}
-}
-{{ end }}{{ end }}
