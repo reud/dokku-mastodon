@@ -62,6 +62,7 @@ server {
 
     proxy_pass  https://{{ $.APP }}-{{ $upstream_port }};
     {{ if eq $.HTTP2_PUSH_SUPPORTED "true" }}http2_push_preload on; {{ end }}
+    proxy_ssl_server_name on;
     proxy_http_version 1.1;
     proxy_read_timeout {{ $.PROXY_READ_TIMEOUT }};
     proxy_buffer_size {{ $.PROXY_BUFFER_SIZE }};
